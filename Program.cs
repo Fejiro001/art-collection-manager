@@ -79,7 +79,7 @@
         {
             try
             {
-                using (StreamReader reader = new StreamReader("art_collection_basic.txt"))
+                using (StreamReader reader = new StreamReader("../../../art_collection_basic.txt"))
                 {
                     string line;
                     while ((line = reader.ReadLine()) != null)
@@ -142,12 +142,12 @@
             string input;
             do
             {
-                Console.WriteLine();
-                Console.WriteLine(prompt);
+                Console.WriteLine($"\n{prompt}");
+                Console.Write("> ");
                 input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.WriteLine("Input cannot be empty.");
+                    Console.WriteLine("Error: Input cannot be empty. Please try again.");
                 }
             }
             while (string.IsNullOrWhiteSpace(input));
@@ -155,6 +155,7 @@
             return input;
         }
 
+        // Allow user to select or input an artist
         static string GetArtistInput(HashSet<string> artistNames)
         {
             List<string> artistList = artistNames.ToList();
@@ -188,16 +189,41 @@
             }
         }
 
+        static string GetValidYear(string prompt)
+        {
+            string input;
+            bool isValid;
+
+            do
+            {
+                Console.WriteLine($"\n{prompt}");
+                Console.Write("> ");
+                input = Console.ReadLine()?.Trim();
+
+                isValid = int.TryParse(input, out int year)
+                    && year >= 1000
+                    && year <= 2026;
+
+                if (!isValid)
+                {
+                    Console.WriteLine("Error: Please enter a valid 4-digit year (e.g., 2020).");
+                }
+            }
+            while (!isValid);
+
+            return input;
+        }
+
         // Get User Input
         static string[] GetUserInput(HashSet<string> mediums, HashSet<string> artistNames)
         {
             string[] artDetails = new string[4];
 
-            artDetails[0] = GetValidInput("Enter art name:");
+            artDetails[0] = GetValidInput("Please enter the title of the artwork:");
             artDetails[1] = GetArtistInput(artistNames);
             artistNames.Add(artDetails[1]); // Add to the artist names HashSet
 
-            artDetails[2] = GetValidInput("Enter the art year:");
+            artDetails[2] = GetValidYear("Enter the art year (e.g., 1995):");
 
             List<string> mediumList = mediums.ToList();
             bool correct;
@@ -205,7 +231,7 @@
 
             do
             {
-                Console.WriteLine("Choose a Medium:");
+                Console.WriteLine("\nPlease choose a artwork medium:");
                 for (int i = 0; i < mediumList.Count; i++)
                 {
                     Console.WriteLine($"{i + 1}. {mediumList[i]}");
@@ -217,6 +243,7 @@
                     && chosenMedium <= mediumList.Count + 1;
             }
             while (!correct);
+
             if (chosenMedium <= mediumList.Count)
             {
                 artDetails[3] = mediumList[chosenMedium - 1];
@@ -327,7 +354,7 @@
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter("sorted_art_collection.txt"))
+                using (StreamWriter writer = new StreamWriter("../../../sorted_art_collection.txt"))
                 {
                     for (int i = 0; i < arrayCount; i++)
                     {
@@ -346,9 +373,9 @@
 
         static void PrintHeader(string title)
         {
-            Console.WriteLine("\n=================================");
+            Console.WriteLine("\n=========================================");
             Console.WriteLine($"\t{title}");
-            Console.WriteLine("=================================\n");
+            Console.WriteLine("=========================================\n");
         }
     }
 }
