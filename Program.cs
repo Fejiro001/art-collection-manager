@@ -9,10 +9,26 @@
 
             Start(artworkArray, ref arrayCount);
         }
+
         static void Start(string[][] artworkArray, ref int arrayCount)
         {
             LoadArtWorks(artworkArray, ref arrayCount);
         }
+
+        static string[][] CreateBiggerArray(string[][] arr, int count)
+        {
+            if (count == arr.Length)
+            {
+                string[][] biggerArray = new string[arr.Length * 2][];
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    biggerArray[i] = arr[i];
+                }
+                return biggerArray;
+            }
+            return arr;
+        }
+
         // Load Artworks
         static void LoadArtWorks(string[][] artworkArray, ref int arrayCount)
         {
@@ -24,6 +40,9 @@
                     while ((line = reader.ReadLine()) != null)
                     {
                         string[] splitLine = line.Split(" | ");
+
+                        artworkArray = CreateBiggerArray(artworkArray, arrayCount);
+
                         artworkArray[arrayCount] = splitLine;
                         arrayCount++;
                     }
