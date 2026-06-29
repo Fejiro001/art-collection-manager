@@ -4,13 +4,17 @@
     {
         static void Main(string[] args)
         {
-            int[] artworkArray = new int[10];
+            string[][] artworkArray = new string[10][];
             int arrayCount = 0;
 
-            LoadArtWorks();
+            Start(artworkArray, ref arrayCount);
+        }
+        static void Start(string[][] artworkArray, ref int arrayCount)
+        {
+            LoadArtWorks(artworkArray, ref arrayCount);
         }
         // Load Artworks
-        static void LoadArtWorks()
+        static void LoadArtWorks(string[][] artworkArray, ref int arrayCount)
         {
             try
             {
@@ -19,12 +23,15 @@
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
-                        Console.WriteLine(line);
+                        string[] splitLine = line.Split(" | ");
+                        artworkArray[arrayCount] = splitLine;
+                        arrayCount++;
                     }
                 }
             }
             catch (Exception e)
             {
+                Console.WriteLine("The file could not be read.");
                 Console.WriteLine(e.Message);
             }
         }
