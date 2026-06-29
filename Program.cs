@@ -149,10 +149,18 @@
         }
 
         // Add New Artwork
-        static void AddNewArtwork(string[][] artworkArray, HashSet<string> mediums)
+        static void AddNewArtwork(string[][] artworkArray, HashSet<string> mediums, ref int arrayCount)
         {
             string[] newArtwork = GetUserInput(mediums);
-            
+            int index = arrayCount - 1;
+
+            while (index >= 0 && artworkArray[index][1].CompareTo(newArtwork[1]) > 0)
+            {
+                artworkArray[index + 1] = artworkArray[index];
+                index--;
+            }
+            artworkArray[index + 1] = newArtwork;
+            arrayCount++;
         }
 
         // Search For Artwork By Artist
