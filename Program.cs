@@ -5,14 +5,16 @@
         static void Main(string[] args)
         {
             string[][] artworkArray = new string[10][];
+            HashSet<string> artistNames = new HashSet<string>();
             int arrayCount = 0;
 
-            Start(artworkArray, ref arrayCount);
+            Start(artworkArray, artistNames, ref arrayCount);
         }
 
-        static void Start(string[][] artworkArray, ref int arrayCount)
+        static void Start(string[][] artworkArray, HashSet<string> artistNames, ref int arrayCount)
         {
-            LoadArtWorks(artworkArray, ref arrayCount);
+            LoadArtWorks(artworkArray, artistNames, ref arrayCount);
+            SortByArtist(artworkArray, ref arrayCount);
         }
 
         static string[][] CreateBiggerArray(string[][] arr, int count)
@@ -30,7 +32,7 @@
         }
 
         // Load Artworks
-        static void LoadArtWorks(string[][] artworkArray, ref int arrayCount)
+        static void LoadArtWorks(string[][] artworkArray, HashSet<string> artistNames, ref int arrayCount)
         {
             try
             {
@@ -44,6 +46,7 @@
                         artworkArray = CreateBiggerArray(artworkArray, arrayCount);
 
                         artworkArray[arrayCount] = splitLine;
+                        artistNames.Add(splitLine[1]);
                         arrayCount++;
                     }
                 }
@@ -54,17 +57,30 @@
                 Console.WriteLine(e.Message);
             }
         }
-        // Sort Artworks By Year
-        static void SortByYear()
-        {
 
+        // Sort Artworks By Artist
+        static void SortByArtist(string[][] artworkArray, ref int arrayCount)
+        {
+            for (int i = 1; i < arrayCount; i++)
+            {
+                string[] keyRow = artworkArray[i];
+                int j = i - 1;
+
+                while (j >= 0 && artworkArray[j][1].CompareTo(keyRow[1]) > 0)
+                {
+                    artworkArray[j + 1] = artworkArray[j];
+                    j--;
+                }
+                artworkArray[j + 1] = keyRow;
+            }
         }
+
         // Add New Artwork
         static void AddNewArtwork()
         {
 
         }
-        // Search For Artwork By Year
+        // Search For Artwork By Artist
         static void SearchForArtwork()
         {
 
