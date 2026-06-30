@@ -61,19 +61,6 @@
             }
         }
 
-        static void CreateBiggerArray(ref string[][] arr, int count)
-        {
-            if (count == arr.Length)
-            {
-                string[][] biggerArray = new string[arr.Length * 2][];
-                for (int i = 0; i < arr.Length; i++)
-                {
-                    biggerArray[i] = arr[i];
-                }
-                arr = biggerArray;
-            }
-        }
-
         // Load Artworks
         static void LoadArtWorks(string[][] artworkArray, HashSet<string> artistNames, HashSet<string> mediums, ref int arrayCount)
         {
@@ -104,6 +91,41 @@
             }
         }
 
+        // Save Artworks to new file
+        static void SaveArtworks(string[][] artworkArray, ref int arrayCount)
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter("../../../sorted_art_collection.txt"))
+                {
+                    for (int i = 0; i < arrayCount; i++)
+                    {
+                        string line = string.Join(" | ", artworkArray[i]);
+                        writer.WriteLine(line);
+                    }
+                }
+                Console.WriteLine("File Saved Successfully.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The file could not be saved.");
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        static void CreateBiggerArray(ref string[][] arr, int count)
+        {
+            if (count == arr.Length)
+            {
+                string[][] biggerArray = new string[arr.Length * 2][];
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    biggerArray[i] = arr[i];
+                }
+                arr = biggerArray;
+            }
+        }
+
         // Sort Artworks By Artist
         static void SortByArtist(string[][] artworkArray, ref int arrayCount)
         {
@@ -119,141 +141,6 @@
                 }
                 artworkArray[j + 1] = keyRow;
             }
-        }
-
-        // Display All Artwork
-        static void DisplayArtwork(string[][] artworkArray, ref int arrayCount)
-        {
-            for (int i = 0; i < arrayCount; i++)
-            {
-
-                Console.WriteLine("-----------------------------------------------");
-                Console.WriteLine($"Artwork: {artworkArray[i][0]}");
-                Console.WriteLine($"Artist Name: {artworkArray[i][1]}");
-                Console.WriteLine($"Art Year: {artworkArray[i][2]}");
-                Console.WriteLine($"Art Medium: {artworkArray[i][3]}");
-                Console.WriteLine("-----------------------------------------------");
-            }
-        }
-
-        // Validate the users input
-        static string GetValidInput(string prompt)
-        {
-            string input;
-            do
-            {
-                Console.WriteLine($"\n{prompt}");
-                Console.Write("> ");
-                input = Console.ReadLine()?.Trim();
-                if (string.IsNullOrWhiteSpace(input))
-                {
-                    Console.WriteLine("Error: Input cannot be empty. Please try again.");
-                }
-            }
-            while (string.IsNullOrWhiteSpace(input));
-
-            return input;
-        }
-
-        // Allow user to select or input an artist
-        static string GetArtistInput(HashSet<string> artistNames)
-        {
-            List<string> artistList = artistNames.ToList();
-            int choice;
-            bool correct;
-
-            do
-            {
-                Console.WriteLine("\nChoose an Artist:");
-                Console.WriteLine($"0. Enter New Artist");
-                for (int i = 0; i < artistList.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {artistList[i]}");
-                }
-
-                correct = int.TryParse(Console.ReadLine(), out choice)
-                    && choice >= 0
-                    && choice <= artistList.Count;
-            }
-            while (!correct);
-
-            if (choice > 0 && choice <= artistList.Count)
-            {
-                return artistList[choice - 1];
-            }
-            else
-            {
-                string newArtist = GetValidInput("Enter the new artist's name:");
-                artistNames.Add(newArtist); // Update the artist names HashSet
-                return newArtist;
-            }
-        }
-
-        static string GetValidYear(string prompt)
-        {
-            string input;
-            bool isValid;
-
-            do
-            {
-                Console.WriteLine($"\n{prompt}");
-                Console.Write("> ");
-                input = Console.ReadLine()?.Trim();
-
-                isValid = int.TryParse(input, out int year)
-                    && year >= 1000
-                    && year <= 2026;
-
-                if (!isValid)
-                {
-                    Console.WriteLine("Error: Please enter a valid 4-digit year (e.g., 2020).");
-                }
-            }
-            while (!isValid);
-
-            return input;
-        }
-
-        // Get User Input
-        static string[] GetUserInput(HashSet<string> mediums, HashSet<string> artistNames)
-        {
-            string[] artDetails = new string[4];
-
-            artDetails[0] = GetValidInput("Please enter the title of the artwork:");
-            artDetails[1] = GetArtistInput(artistNames);
-            artistNames.Add(artDetails[1]); // Add to the artist names HashSet
-
-            artDetails[2] = GetValidYear("Enter the art year (e.g., 1995):");
-
-            List<string> mediumList = mediums.ToList();
-            bool correct;
-            int chosenMedium;
-
-            do
-            {
-                Console.WriteLine("\nPlease choose a artwork medium:");
-                for (int i = 0; i < mediumList.Count; i++)
-                {
-                    Console.WriteLine($"{i + 1}. {mediumList[i]}");
-                }
-                Console.WriteLine($"{mediumList.Count + 1}. Other");
-
-                correct = int.TryParse(Console.ReadLine(), out chosenMedium)
-                    && chosenMedium >= 1
-                    && chosenMedium <= mediumList.Count + 1;
-            }
-            while (!correct);
-
-            if (chosenMedium <= mediumList.Count)
-            {
-                artDetails[3] = mediumList[chosenMedium - 1];
-            }
-            else
-            {
-                artDetails[3] = "Other";
-            }
-
-            return artDetails;
         }
 
         // Add New Artwork
@@ -349,25 +236,138 @@
             return -1;
         }
 
-        // Save Artworks to new file
-        static void SaveArtworks(string[][] artworkArray, ref int arrayCount)
+        // Get User Input
+        static string[] GetUserInput(HashSet<string> mediums, HashSet<string> artistNames)
         {
-            try
+            string[] artDetails = new string[4];
+
+            artDetails[0] = GetValidInput("Please enter the title of the artwork:");
+            artDetails[1] = GetArtistInput(artistNames);
+            artistNames.Add(artDetails[1]); // Add to the artist names HashSet
+
+            artDetails[2] = GetValidYear("Enter the art year (e.g., 1995):");
+
+            List<string> mediumList = mediums.ToList();
+            bool correct;
+            int chosenMedium;
+
+            do
             {
-                using (StreamWriter writer = new StreamWriter("../../../sorted_art_collection.txt"))
+                Console.WriteLine("\nPlease choose a artwork medium:");
+                for (int i = 0; i < mediumList.Count; i++)
                 {
-                    for (int i = 0; i < arrayCount; i++)
-                    {
-                        string line = string.Join(" | ", artworkArray[i]);
-                        writer.WriteLine(line);
-                    }
+                    Console.WriteLine($"{i + 1}. {mediumList[i]}");
                 }
-                Console.WriteLine("File Saved Successfully.");
+                Console.WriteLine($"{mediumList.Count + 1}. Other");
+
+                correct = int.TryParse(Console.ReadLine(), out chosenMedium)
+                    && chosenMedium >= 1
+                    && chosenMedium <= mediumList.Count + 1;
             }
-            catch (Exception e)
+            while (!correct);
+
+            if (chosenMedium <= mediumList.Count)
             {
-                Console.WriteLine("The file could not be saved.");
-                Console.WriteLine(e.Message);
+                artDetails[3] = mediumList[chosenMedium - 1];
+            }
+            else
+            {
+                artDetails[3] = "Other";
+            }
+
+            return artDetails;
+        }
+
+        // Allow user to select or input an artist
+        static string GetArtistInput(HashSet<string> artistNames)
+        {
+            List<string> artistList = artistNames.ToList();
+            int choice;
+            bool correct;
+
+            do
+            {
+                Console.WriteLine("\nChoose an Artist:");
+                Console.WriteLine($"0. Enter New Artist");
+                for (int i = 0; i < artistList.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {artistList[i]}");
+                }
+
+                correct = int.TryParse(Console.ReadLine(), out choice)
+                    && choice >= 0
+                    && choice <= artistList.Count;
+            }
+            while (!correct);
+
+            if (choice > 0 && choice <= artistList.Count)
+            {
+                return artistList[choice - 1];
+            }
+            else
+            {
+                string newArtist = GetValidInput("Enter the new artist's name:");
+                artistNames.Add(newArtist); // Update the artist names HashSet
+                return newArtist;
+            }
+        }
+
+        // Validate the users input
+        static string GetValidInput(string prompt)
+        {
+            string input;
+            do
+            {
+                Console.WriteLine($"\n{prompt}");
+                Console.Write("> ");
+                input = Console.ReadLine()?.Trim();
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.WriteLine("Error: Input cannot be empty. Please try again.");
+                }
+            }
+            while (string.IsNullOrWhiteSpace(input));
+
+            return input;
+        }
+
+        static string GetValidYear(string prompt)
+        {
+            string input;
+            bool isValid;
+
+            do
+            {
+                Console.WriteLine($"\n{prompt}");
+                Console.Write("> ");
+                input = Console.ReadLine()?.Trim();
+
+                isValid = int.TryParse(input, out int year)
+                    && year >= 1000
+                    && year <= 2026;
+
+                if (!isValid)
+                {
+                    Console.WriteLine("Error: Please enter a valid 4-digit year (e.g., 2020).");
+                }
+            }
+            while (!isValid);
+
+            return input;
+        }
+
+        // Display All Artwork
+        static void DisplayArtwork(string[][] artworkArray, ref int arrayCount)
+        {
+            for (int i = 0; i < arrayCount; i++)
+            {
+
+                Console.WriteLine("-----------------------------------------------");
+                Console.WriteLine($"Artwork: {artworkArray[i][0]}");
+                Console.WriteLine($"Artist Name: {artworkArray[i][1]}");
+                Console.WriteLine($"Art Year: {artworkArray[i][2]}");
+                Console.WriteLine($"Art Medium: {artworkArray[i][3]}");
+                Console.WriteLine("-----------------------------------------------");
             }
         }
 
