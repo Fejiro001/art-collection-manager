@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-            string[][] artworkArray = new string[10][];
+            const int INITIAL_CAPACITY = 10;
+            string[][] artworkArray = new string[INITIAL_CAPACITY][];
             HashSet<string> artistNames = new HashSet<string>();
             HashSet<string> mediums = new HashSet<string>();
             int arrayCount = 0;
@@ -31,7 +32,7 @@
                 Console.WriteLine("2. Add New Artwork");
                 Console.WriteLine("3. Search For an Artwork by Artist");
                 Console.WriteLine("4. Save and Exit");
-                Console.WriteLine("Select an option (1 - 4):");
+                Console.WriteLine("\nSelect an option (1 - 4):");
 
                 bool correct = int.TryParse(Console.ReadLine().Trim(), out int choice);
 
@@ -126,7 +127,7 @@
             }
         }
 
-        // Sort Artworks By Artist
+        // Sort Artworks By Artist (Insertion Sort)
         static void SortByArtist(string[][] artworkArray, ref int arrayCount)
         {
             for (int i = 1; i < arrayCount; i++)
@@ -143,13 +144,14 @@
             }
         }
 
-        // Add New Artwork
+        // Add New Artwork (Ordered Insertion)
         static void AddNewArtwork(ref string[][] artworkArray, HashSet<string> mediums, HashSet<string> artistNames, ref int arrayCount)
         {
             string[] newArtwork = GetUserInput(mediums, artistNames);
             int index = arrayCount - 1;
             CreateBiggerArray(ref artworkArray, arrayCount);
 
+            // Shift existing elements to the right to maintain alphabetical order by artist
             while (index >= 0 && artworkArray[index][1].CompareTo(newArtwork[1]) > 0)
             {
                 artworkArray[index + 1] = artworkArray[index];
@@ -168,7 +170,7 @@
 
             do
             {
-                Console.WriteLine("What artists work are you searching for?");
+                Console.WriteLine("\nWhat artists work are you searching for?");
                 for (int i = 0; i < artistList.Count; i++)
                 {
                     Console.WriteLine($"{i + 1}. {artistList[i]}");
@@ -177,6 +179,11 @@
                 correct = int.TryParse(Console.ReadLine(), out chosenArtist)
                     && chosenArtist >= 1
                     && chosenArtist <= artistList.Count;
+
+                if (!correct)
+                {
+                    Console.WriteLine($"Error: Please enter a valid number (1 - {arrayCount}).");
+                }
             }
             while (!correct);
 
@@ -189,7 +196,7 @@
                 return;
             }
 
-            // Linear Search to find first ocurrence of artist work
+            // Perform a linear scan backward from the binary search hit to guarantee we display the very first record by this artist
             while (targetIndex > 0 && artworkArray[targetIndex - 1][1].CompareTo(searchArtist) == 0)
             {
                 targetIndex -= 1;
